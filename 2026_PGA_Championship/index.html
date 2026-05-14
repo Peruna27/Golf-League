@@ -902,9 +902,19 @@
         let consecutiveErrors = 0;
         const CACHE_KEY = 'pga_championship_2026';
 
-        // Masters.com JSON feed (primary), ESPN API (fallback)
-        const MASTERS_URL = 'https://www.masters.com/en_US/scores/feeds/2026/scores.json';
+        // ESPN scoreboard endpoint - the bare /leaderboard returns 0 events for
+        // the PGA Championship (it's run by PGA of America, not PGA Tour).
+        // /scoreboard?dates=YYYYMMDD does return it.
+        function todayYYYYMMDD() {
+            const d = new Date();
+            return d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+        }
         const ESPN_API_URLS = [
+            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=' + todayYYYYMMDD(),
+            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260514',
+            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260515',
+            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260516',
+            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260517',
             'https://site.api.espn.com/apis/site/v2/sports/golf/pga/leaderboard'
         ];
 
