@@ -685,7 +685,7 @@
 
         .sc-grid {
             display: grid;
-            grid-template-columns: 34px repeat(9, 1fr) 36px;
+            grid-template-columns: 44px repeat(9, 1fr) 38px;
             font-family: 'DM Sans', sans-serif;
             font-size: 11px;
             text-align: center;
@@ -703,6 +703,18 @@
             color: var(--text-mid);
             font-size: 9px;
             font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        /* Label cell overrides: keep the leftmost "Score"/"Par"/"Hole" label small even on score/par rows */
+        .sc-row-par .sc-cell.sc-row-label,
+        .sc-row-score .sc-cell.sc-row-label,
+        .sc-row-holes .sc-cell.sc-row-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-mid);
+            background: #f7f7f9;
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
