@@ -1036,47 +1036,83 @@
             const competition = event.competitions && event.competitions[0];
             const competitors = competition ? competition.competitors || [] : [];
 
-            const parsed = competitors.map(c => {
+            let parsed = competitors.map(c => {
                 try {
                     const athlete = c.athlete || {};
                     const displayName = athlete.displayName || 'Unknown';
-                    const score = c.score != null ? c.score : 'E';
-                    const scoreToPar = parseScore(typeof score === 'string' ? score : String(score));
+                    const scoreStr = c.score != null ? String(c.score) : 'E';
+                    const scoreToPar = parseScore(scoreStr);
 
-                    let today = '--';
-                    const rounds = [];
-                    if (c.linescores && c.linescores.length > 0) {
-                        for (const ls of c.linescores) {
-                            rounds.push(ls && ls.displayValue ? ls.displayValue : '--');
+                    const lsArr = c.linescores || [];
+
+                    // Round totals: stroke total when complete (18 holes), else '--'
+                    const rounds = ['--','--','--','--'];
+                    for (let i = 0; i < 4 && i < lsArr.length; i++) {
+                        const ls = lsArr[i] || {};
+                        const holes = ls.linescores || [];
+                        if (holes.length === 18 && ls.value != null) {
+                            rounds[i] = String(Math.round(ls.value));
                         }
-                        const last = c.linescores[c.linescores.length - 1];
-                        if (last && last.displayValue) today = last.displayValue;
                     }
 
-                    let thru = '', isCut = false, isWD = false;
-                    if (c.status) {
-                        const st = c.status;
-                        const dv = (st.displayValue || '').toUpperCase();
-                        if (dv === 'CUT' || dv === 'MC') { thru = 'CUT'; isCut = true; }
-                        else if (dv === 'WD') { thru = 'WD'; isWD = true; }
-                        else if (dv === 'DQ') { thru = 'DQ'; isWD = true; }
-                        else { thru = st.displayValue || ''; }
+                    // Per-hole scores for the scorecard modal
+                    const holeScores = [null, null, null, null];
+                    for (let r = 0; r < 4 && r < lsArr.length; r++) {
+                        const holes = (lsArr[r] && lsArr[r].linescores) || [];
+                        if (holes.length > 0) {
+                            const arr = new Array(18).fill(null);
+                            for (const h of holes) {
+                                const period = h.period;
+                                if (period >= 1 && period <= 18 && h.value != null) {
+                                    arr[period - 1] = Math.round(h.value);
+                                }
+                            }
+                            holeScores[r] = arr;
+                        }
                     }
 
-                    const position = c.sortOrder || 999;
-                    const posDisplay = c.status && c.status.position ? c.status.position.displayName : '';
+                    // Find current (latest with any holes played) round for "today" + "thru"
+                    let curIdx = -1, curHoles = 0;
+                    for (let i = 0; i < lsArr.length; i++) {
+                        const holes = (lsArr[i] && lsArr[i].linescores) || [];
+                        if (holes.length > 0) { curIdx = i; curHoles = holes.length; }
+                    }
+                    let today = '--';
+                    let thru = '';
+                    if (curIdx >= 0) {
+                        today = lsArr[curIdx].displayValue || '--';
+                        thru = curHoles >= 18 ? 'F' : 'Thru ' + curHoles;
+                    }
+
+                    const order = c.order || 999;
                     const match = matchPlayer(displayName);
 
                     return {
-                        name: displayName, scoreToPar, scoreDisplay: fmt(scoreToPar),
-                        today, thru, rounds, position, posDisplay: posDisplay || String(position),
-                        isCut, isWD, team: match ? match.team : null,
+                        name: displayName, scoreStr, scoreToPar, scoreDisplay: fmt(scoreToPar),
+                        today, thru, rounds, holeScores,
+                        position: order, posDisplay: String(order),
+                        isCut: false, isWD: false,
+                        team: match ? match.team : null,
                         rosterName: match ? match.playerDef.name : null
                     };
-                } catch (e) { return null; }
+                } catch (e) { console.warn('Skipping competitor:', e); return null; }
             }).filter(Boolean);
 
             parsed.sort((a, b) => a.position - b.position);
+
+            // Assign position display with "T" prefix for ties (group by scoreStr)
+            const firstOrderByScore = {};
+            const countByScore = {};
+            for (const p of parsed) {
+                if (!(p.scoreStr in firstOrderByScore)) firstOrderByScore[p.scoreStr] = p.position;
+                countByScore[p.scoreStr] = (countByScore[p.scoreStr] || 0) + 1;
+            }
+            for (const p of parsed) {
+                const first = firstOrderByScore[p.scoreStr];
+                const tied = countByScore[p.scoreStr] > 1;
+                p.posDisplay = tied ? 'T' + first : String(first);
+            }
+
             return { competitors: parsed, tournamentName: event.name || '', tournamentStatus: '' };
         }
 
@@ -1310,9 +1346,6 @@
             const html = [1,2,3,4].map(rn => {
                 const scores = rounds[rn-1];
                 const hasData = scores && scores.some(s => s != null);
-                const total = hasData ? scores.reduce((a,b) => a + (b||0), 0) : 0;
-                const toPar = total - COURSE_PAR_TOTAL;
-                const roundTotal = (p.rounds && p.rounds[rn-1]) || (hasData ? String(total) : '--');
 
                 if (!hasData) {
                     return `<div class="sc-round empty">
@@ -1324,9 +1357,20 @@
                     </div>`;
                 }
 
+                // Compute partial-aware totals
+                let strokes = 0, parPlayed = 0, holesPlayed = 0;
+                scores.forEach((s, i) => {
+                    if (s != null) { strokes += s; parPlayed += COURSE_PARS[i]; holesPlayed++; }
+                });
+                const toPar = strokes - parPlayed;
+                const inProgress = holesPlayed < 18;
+                const roundTotal = inProgress
+                    ? `${strokes} <span style="font-size:10px;font-weight:600;color:var(--text-mid);">thru ${holesPlayed}</span>`
+                    : String(strokes);
+
                 return `<div class="sc-round">
                     <div class="sc-round-header">
-                        <div class="sc-round-label">Round ${rn}</div>
+                        <div class="sc-round-label">Round ${rn}${inProgress ? ' &middot; In Progress' : ''}</div>
                         <div class="sc-round-totals">
                             <div class="sc-round-strokes">${roundTotal}</div>
                             <div class="sc-round-topar ${cls(toPar)}">${fmt(toPar)}</div>
