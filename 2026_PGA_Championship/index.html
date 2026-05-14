@@ -57,14 +57,16 @@
 
         .header-title {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .masters-logo-img {
-            height: 44px;
+            height: 88px;
             width: auto;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
         }
 
         header h1 {
@@ -1052,37 +1054,42 @@
 
         // ── DUMMY DATA ──
         function loadDummyData() {
+            // Mike runaway leader: top 4 = -42, vs Joe ~-9, Reed ~-8
             const dummyPlayers = [
-                { name: 'Jon Rahm', scoreToPar: -6, position: 3 },
-                { name: 'Matt Fitzpatrick', scoreToPar: -2, position: 12 },
-                { name: 'Tommy Fleetwood', scoreToPar: -4, position: 7 },
-                { name: 'Brooks Koepka', scoreToPar: 1, position: 28 },
-                { name: 'Justin Rose', scoreToPar: -1, position: 18 },
-                { name: 'Min Woo Lee', scoreToPar: 3, position: 42 },
-                { name: 'Si Woo Kim', scoreToPar: -3, position: 9 },
-                { name: 'Shane Lowry', scoreToPar: 0, position: 22 },
-                { name: 'Bryson DeChambeau', scoreToPar: -8, position: 1 },
-                { name: 'Xander Schauffele', scoreToPar: -5, position: 4 },
-                { name: 'Hideki Matsuyama', scoreToPar: -3, position: 10 },
-                { name: 'Robert MacIntyre', scoreToPar: 0, position: 20 },
-                { name: 'Patrick Reed', scoreToPar: 4, position: 51 },
-                { name: 'Jason Day', scoreToPar: 1, position: 30 },
-                { name: 'Jordan Spieth', scoreToPar: -7, position: 2 },
-                { name: 'Jake Knapp', scoreToPar: 2, position: 36 },
-                { name: 'Rory McIlroy', scoreToPar: -5, position: 5 },
-                { name: 'Ludvig Aberg', scoreToPar: -4, position: 6 },
-                { name: 'Collin Morikawa', scoreToPar: -3, position: 8 },
-                { name: 'Cameron Young', scoreToPar: 0, position: 21 },
-                { name: 'Viktor Hovland', scoreToPar: -1, position: 15 },
-                { name: 'Akshay Bhatia', scoreToPar: 2, position: 35 },
-                { name: 'Patrick Cantlay', scoreToPar: -2, position: 11 },
-                { name: 'Cameron Smith', scoreToPar: 1, position: 27 },
-                { name: 'Scottie Scheffler', scoreToPar: -6, position: 3 },
-                { name: 'Justin Thomas', scoreToPar: -2, position: 13 },
-                { name: 'Tony Finau', scoreToPar: -1, position: 16 },
-                { name: 'Dustin Johnson', scoreToPar: 0, position: 23 },
-                { name: 'Phil Mickelson', scoreToPar: 3, position: 44 },
-                { name: 'Tiger Woods', scoreToPar: 5, position: 58 },
+                // Mike — dominant
+                { name: 'Jon Rahm', scoreToPar: -12, position: 1 },
+                { name: 'Tommy Fleetwood', scoreToPar: -11, position: 2 },
+                { name: 'Matt Fitzpatrick', scoreToPar: -10, position: 3 },
+                { name: 'Si Woo Kim', scoreToPar: -9, position: 4 },
+                { name: 'Min Woo Lee', scoreToPar: -3, position: 11 },
+                { name: 'Justin Rose', scoreToPar: -2, position: 18 },
+                { name: 'Shane Lowry', scoreToPar: -1, position: 24 },
+                { name: 'Brooks Koepka', scoreToPar: 2, position: 38 },
+                // Joe — mediocre
+                { name: 'Bryson DeChambeau', scoreToPar: -3, position: 12 },
+                { name: 'Xander Schauffele', scoreToPar: -3, position: 13 },
+                { name: 'Jordan Spieth', scoreToPar: -2, position: 19 },
+                { name: 'Hideki Matsuyama', scoreToPar: -1, position: 25 },
+                { name: 'Robert MacIntyre', scoreToPar: 1, position: 32 },
+                { name: 'Jason Day', scoreToPar: 2, position: 39 },
+                { name: 'Jake Knapp', scoreToPar: 3, position: 46 },
+                { name: 'Patrick Reed', scoreToPar: 5, position: 58 },
+                // Reed — mediocre
+                { name: 'Rory McIlroy', scoreToPar: -3, position: 14 },
+                { name: 'Ludvig Aberg', scoreToPar: -2, position: 20 },
+                { name: 'Collin Morikawa', scoreToPar: -2, position: 21 },
+                { name: 'Patrick Cantlay', scoreToPar: -1, position: 26 },
+                { name: 'Viktor Hovland', scoreToPar: 0, position: 28 },
+                { name: 'Cameron Young', scoreToPar: 2, position: 40 },
+                { name: 'Akshay Bhatia', scoreToPar: 3, position: 47 },
+                { name: 'Cameron Smith', scoreToPar: 4, position: 53 },
+                // Non-rostered context
+                { name: 'Scottie Scheffler', scoreToPar: -7, position: 5 },
+                { name: 'Justin Thomas', scoreToPar: -5, position: 6 },
+                { name: 'Tony Finau', scoreToPar: -4, position: 7 },
+                { name: 'Dustin Johnson', scoreToPar: -1, position: 27 },
+                { name: 'Phil Mickelson', scoreToPar: 4, position: 54 },
+                { name: 'Tiger Woods', scoreToPar: 6, position: 62 },
             ];
 
             leaderboardData = dummyPlayers.map(p => {
