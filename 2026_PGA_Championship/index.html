@@ -702,13 +702,9 @@
         }
         .sc-cell:last-child { border-right: none; }
 
-        /* Dark horizontal lines bound the Hole + Par header section:
-           above hole row, between hole and par, below par row (above score). */
+        /* Dark horizontal lines above and below the Hole row only. Par-to-score stays light. */
         .sc-row-holes .sc-cell {
             border-top: 1px solid #8a92a0;
-            border-bottom-color: #8a92a0;
-        }
-        .sc-row-par .sc-cell {
             border-bottom-color: #8a92a0;
         }
 
