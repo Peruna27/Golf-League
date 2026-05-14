@@ -1352,8 +1352,8 @@
             const holeNumbers = Array.from({length: 9}, (_, i) => i + startIdx + 1);
 
             const holeRow = `<div class="sc-cell sc-row-label">Hole</div>` +
-                holeNumbers.map(n => `<div class="sc-cell sc-row-label">${n}</div>`).join('') +
-                `<div class="sc-cell sc-row-label">${label}</div>`;
+                holeNumbers.map(n => `<div class="sc-cell">${n}</div>`).join('') +
+                `<div class="sc-cell total">${label}</div>`;
 
             const parRow = `<div class="sc-cell sc-row-label">Par</div>` +
                 ninePars.map(par => `<div class="sc-cell">${par}</div>`).join('') +
