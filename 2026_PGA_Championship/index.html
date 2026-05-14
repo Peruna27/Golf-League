@@ -57,16 +57,15 @@
 
         .header-title {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .masters-logo-img {
-            height: 88px;
+            height: 38px;
             width: auto;
-            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.25));
         }
 
         header h1 {
@@ -567,6 +566,216 @@
             font-weight: 700;
         }
 
+        /* ── Clickable rows ── */
+        .player-row, .lb-row { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .player-row:active, .lb-row:active { background: rgba(0,0,0,0.04); }
+
+        /* ── Scorecard Modal ── */
+        .sc-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.72);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 200;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            overflow-y: auto;
+            padding: 24px 10px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .sc-overlay.open { display: flex; opacity: 1; }
+
+        .sc-modal {
+            background: #fff;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 520px;
+            margin: auto;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            animation: scPop 0.22s cubic-bezier(0.4,0,0.2,1);
+        }
+        @keyframes scPop { from { transform: translateY(12px) scale(0.96); opacity: 0; } to { transform: none; opacity: 1; } }
+
+        .sc-header {
+            background: var(--masters-green);
+            color: #fff;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sc-player-name {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .sc-player-meta {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 3px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .sc-close {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: #fff;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+        .sc-close:active { background: rgba(255,255,255,0.3); }
+
+        .sc-body { padding: 12px; background: #fff; }
+
+        .sc-round {
+            margin-bottom: 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .sc-round:last-child { margin-bottom: 0; }
+        .sc-round.empty { opacity: 0.5; }
+
+        .sc-round-header {
+            background: var(--cream-light);
+            padding: 7px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .sc-round-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-mid);
+        }
+        .sc-round-totals {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .sc-round-strokes {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 900;
+            font-size: 18px;
+        }
+        .sc-round-topar {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .sc-grid {
+            display: grid;
+            grid-template-columns: 34px repeat(9, 1fr) 36px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            text-align: center;
+            background: #fff;
+        }
+        .sc-cell {
+            padding: 5px 0;
+            border-right: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+            line-height: 1.2;
+        }
+        .sc-cell:last-child { border-right: none; }
+        .sc-row-label {
+            background: #f7f7f9;
+            color: var(--text-mid);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .sc-row-par .sc-cell {
+            font-weight: 600;
+            color: var(--text-mid);
+            background: #fafafc;
+            font-size: 11px;
+        }
+        .sc-row-score .sc-cell {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 800;
+            font-size: 13px;
+            color: var(--text-dark);
+            position: relative;
+            min-height: 26px;
+        }
+        .sc-row-score .sc-cell.no-score { color: #ccc; font-weight: 500; }
+        .sc-cell.total {
+            background: #f0f0f3;
+            font-weight: 800;
+        }
+        /* Score styling: birdie/eagle red, bogey/double blue */
+        .sc-score-wrap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            min-height: 20px;
+        }
+        .sc-cell.birdie .sc-score-wrap {
+            color: var(--score-red);
+            border: 1.5px solid var(--score-red);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            box-sizing: border-box;
+        }
+        .sc-cell.eagle .sc-score-wrap {
+            color: var(--score-red);
+            border: 1.5px double var(--score-red);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            box-sizing: border-box;
+            outline: 1.5px solid var(--score-red);
+            outline-offset: 1px;
+        }
+        .sc-cell.bogey .sc-score-wrap {
+            color: var(--score-blue);
+            border: 1.5px solid var(--score-blue);
+            width: 20px;
+            height: 20px;
+            box-sizing: border-box;
+        }
+        .sc-cell.double .sc-score-wrap {
+            color: var(--score-blue);
+            border: 1.5px double var(--score-blue);
+            width: 22px;
+            height: 22px;
+            box-sizing: border-box;
+            outline: 1.5px solid var(--score-blue);
+            outline-offset: 1px;
+        }
+
+        .sc-empty-msg {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 11px;
+            padding: 14px;
+            font-style: italic;
+        }
+
         /* ── Responsive ── */
         @media (min-width: 500px) {
             header h1 { font-size: 26px; }
@@ -617,42 +826,42 @@
     </div>
 
     <script>
-        // ── TEAM DEFINITIONS ──
+        // ── TEAM DEFINITIONS — 2026 PGA Championship rosters ──
         const TEAMS = {
             'Mike': {
                 players: [
-                    { name: 'Jon Rahm', search: ['rahm'] },
+                    { name: 'Rory McIlroy', search: ['mcilroy'] },
                     { name: 'Matt Fitzpatrick', search: ['fitzpatrick'] },
-                    { name: 'Tommy Fleetwood', search: ['fleetwood'] },
-                    { name: 'Brooks Koepka', search: ['koepka'] },
-                    { name: 'Justin Rose', search: ['justin rose'] },
-                    { name: 'Min Woo Lee', search: ['min woo lee', 'min woo'] },
-                    { name: 'Si Woo Kim', search: ['si woo kim', 'si woo'] },
-                    { name: 'Shane Lowry', search: ['lowry'] }
-                ]
-            },
-            'Joe': {
-                players: [
-                    { name: 'Bryson DeChambeau', search: ['dechambeau'] },
                     { name: 'Xander Schauffele', search: ['schauffele'] },
-                    { name: 'Hideki Matsuyama', search: ['matsuyama'] },
-                    { name: 'Robert MacIntyre', search: ['macintyre', 'mcintyre'] },
-                    { name: 'Patrick Reed', search: ['patrick reed'] },
-                    { name: 'Jason Day', search: ['jason day'] },
-                    { name: 'Jordan Spieth', search: ['spieth'] },
-                    { name: 'Jake Knapp', search: ['knapp'] }
+                    { name: 'Justin Rose', search: ['justin rose'] },
+                    { name: 'Viktor Hovland', search: ['hovland'] },
+                    { name: 'J.J. Spaun', search: ['spaun'] },
+                    { name: 'Sam Burns', search: ['sam burns'] },
+                    { name: 'Si Woo Kim', search: ['si woo kim', 'si woo'] }
                 ]
             },
             'Reed': {
                 players: [
-                    { name: 'Rory McIlroy', search: ['mcilroy'] },
+                    { name: 'Cameron Young', search: ['cameron young', 'cam young'] },
                     { name: 'Ludvig Aberg', search: ['aberg', 'åberg'] },
                     { name: 'Collin Morikawa', search: ['morikawa'] },
-                    { name: 'Cameron Young', search: ['cameron young'] },
-                    { name: 'Viktor Hovland', search: ['hovland'] },
-                    { name: 'Akshay Bhatia', search: ['bhatia'] },
                     { name: 'Patrick Cantlay', search: ['cantlay'] },
-                    { name: 'Cameron Smith', search: ['cameron smith'] }
+                    { name: 'Min Woo Lee', search: ['min woo lee', 'min woo'] },
+                    { name: 'Rickie Fowler', search: ['fowler'] },
+                    { name: 'Patrick Reed', search: ['patrick reed'] },
+                    { name: 'Akshay Bhatia', search: ['bhatia'] }
+                ]
+            },
+            'Joe': {
+                players: [
+                    { name: 'Jon Rahm', search: ['rahm'] },
+                    { name: 'Bryson DeChambeau', search: ['dechambeau'] },
+                    { name: 'Tommy Fleetwood', search: ['fleetwood'] },
+                    { name: 'Brooks Koepka', search: ['koepka'] },
+                    { name: 'Tyrrell Hatton', search: ['hatton'] },
+                    { name: 'Russell Henley', search: ['russell henley'] },
+                    { name: 'Jordan Spieth', search: ['spieth'] },
+                    { name: 'Harris English', search: ['harris english'] }
                 ]
             }
         };
@@ -1003,7 +1212,7 @@
                                 const counting = i < 4 && !p.isCut && !p.isWD;
                                 const rowCls = (p.isCut || p.isWD) ? 'cut' : (counting ? 'counting' : 'bench');
                                 return `
-                                    <div class="player-row ${rowCls}">
+                                    <div class="player-row ${rowCls}" onclick="showScorecard(${JSON.stringify(p.name)})">
                                         <div class="player-pos">${p.posDisplay}</div>
                                         <div class="player-dot"></div>
                                         <div class="player-name">${shortName(p.name)}</div>
@@ -1033,7 +1242,7 @@
                     <div class="lb-score">Tot</div>
                 </div>
                 ${rows.map(p => `
-                    <div class="lb-row ${p.team ? 'rostered' : ''}">
+                    <div class="lb-row ${p.team ? 'rostered' : ''}" onclick="showScorecard(${JSON.stringify(p.name)})">
                         <div class="lb-pos">${p.posDisplay}</div>
                         <div class="lb-team ${p.team ? TEAM_COLORS[p.team] : ''}">${p.team || ''}</div>
                         <div class="lb-name">${shortName(p.name)}</div>
@@ -1052,37 +1261,151 @@
             card.querySelector('.team-players').classList.toggle('open');
         }
 
+        // ── COURSE PARS (Aronimink, 2026 PGA Championship setup, par 70) ──
+        const COURSE_PARS = [4,4,4,4,4,3,4,3,5, 4,4,4,4,3,4,5,3,4];
+        const COURSE_PAR_TOTAL = COURSE_PARS.reduce((a,b)=>a+b, 0);
+
+        // ── SCORECARD MODAL ──
+        function showScorecard(playerName) {
+            // Try exact match first, then by rosterName (TEAMS roster name)
+            let p = leaderboardData.find(x => x.name === playerName);
+            if (!p) p = leaderboardData.find(x => x.rosterName === playerName);
+            if (!p) return;
+            document.getElementById('sc-player-name').textContent = p.name;
+            const teamLabel = p.team ? ' &middot; Team ' + p.team : '';
+            document.getElementById('sc-player-meta').innerHTML =
+                p.posDisplay + ' &middot; ' + p.scoreDisplay + teamLabel;
+
+            const body = document.getElementById('sc-body');
+            const rounds = p.holeScores || [];
+            const html = [1,2,3,4].map(rn => {
+                const scores = rounds[rn-1];
+                const hasData = scores && scores.some(s => s != null);
+                const total = hasData ? scores.reduce((a,b) => a + (b||0), 0) : 0;
+                const toPar = total - COURSE_PAR_TOTAL;
+                const roundTotal = (p.rounds && p.rounds[rn-1]) || (hasData ? String(total) : '--');
+
+                if (!hasData) {
+                    return `<div class="sc-round empty">
+                        <div class="sc-round-header">
+                            <div class="sc-round-label">Round ${rn}</div>
+                            <div class="sc-round-totals"><div class="sc-round-strokes">--</div></div>
+                        </div>
+                        <div class="sc-empty-msg">Not yet played</div>
+                    </div>`;
+                }
+
+                return `<div class="sc-round">
+                    <div class="sc-round-header">
+                        <div class="sc-round-label">Round ${rn}</div>
+                        <div class="sc-round-totals">
+                            <div class="sc-round-strokes">${roundTotal}</div>
+                            <div class="sc-round-topar ${cls(toPar)}">${fmt(toPar)}</div>
+                        </div>
+                    </div>
+                    ${renderNine(scores, 0, 'Out')}
+                    ${renderNine(scores, 9, 'In')}
+                </div>`;
+            }).join('');
+
+            body.innerHTML = html;
+            document.getElementById('sc-overlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function renderNine(scores, startIdx, label) {
+            const ninePars = COURSE_PARS.slice(startIdx, startIdx + 9);
+            const nineScores = scores.slice(startIdx, startIdx + 9);
+            const parSum = ninePars.reduce((a,b)=>a+b, 0);
+            const scoreSum = nineScores.reduce((a,b) => a + (b||0), 0);
+
+            const holeNumbers = Array.from({length: 9}, (_, i) => i + startIdx + 1);
+
+            const holeRow = `<div class="sc-cell sc-row-label">Hole</div>` +
+                holeNumbers.map(n => `<div class="sc-cell sc-row-label">${n}</div>`).join('') +
+                `<div class="sc-cell sc-row-label">${label}</div>`;
+
+            const parRow = `<div class="sc-cell sc-row-label">Par</div>` +
+                ninePars.map(par => `<div class="sc-cell">${par}</div>`).join('') +
+                `<div class="sc-cell total">${parSum}</div>`;
+
+            const scoreRow = `<div class="sc-cell sc-row-label">Score</div>` +
+                nineScores.map((s, i) => {
+                    if (s == null) return `<div class="sc-cell no-score">&mdash;</div>`;
+                    const diff = s - ninePars[i];
+                    let cellCls = '';
+                    if (diff <= -2) cellCls = 'eagle';
+                    else if (diff === -1) cellCls = 'birdie';
+                    else if (diff === 1) cellCls = 'bogey';
+                    else if (diff >= 2) cellCls = 'double';
+                    return `<div class="sc-cell ${cellCls}"><span class="sc-score-wrap">${s}</span></div>`;
+                }).join('') +
+                `<div class="sc-cell total">${scoreSum || '--'}</div>`;
+
+            return `<div class="sc-grid sc-row-holes">${holeRow}</div>
+                    <div class="sc-grid sc-row-par">${parRow}</div>
+                    <div class="sc-grid sc-row-score">${scoreRow}</div>`;
+        }
+
+        function closeScorecard(event) {
+            // If called from overlay click, only close if backdrop itself was clicked
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('sc-overlay').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // Generate a plausible 18-hole score array given total strokes target
+        function genHoleScores(targetStrokes) {
+            if (targetStrokes == null) return null;
+            const scores = COURSE_PARS.slice();
+            let diff = targetStrokes - COURSE_PAR_TOTAL;
+            // Deterministic pseudo-random by player to give varied but consistent scorecards
+            const order = [13, 4, 8, 1, 16, 6, 11, 15, 2, 9, 12, 17, 0, 7, 14, 5, 10, 3];
+            if (diff < 0) {
+                for (const i of order) {
+                    if (diff >= 0) break;
+                    if (scores[i] > 2) { scores[i] -= 1; diff += 1; }
+                }
+            } else if (diff > 0) {
+                for (const i of order) {
+                    if (diff <= 0) break;
+                    scores[i] += 1; diff -= 1;
+                }
+            }
+            return scores;
+        }
+
         // ── DUMMY DATA ──
         function loadDummyData() {
             // Mike runaway leader: top 4 = -42, vs Joe ~-9, Reed ~-8
             const dummyPlayers = [
                 // Mike — dominant
-                { name: 'Jon Rahm', scoreToPar: -12, position: 1 },
-                { name: 'Tommy Fleetwood', scoreToPar: -11, position: 2 },
-                { name: 'Matt Fitzpatrick', scoreToPar: -10, position: 3 },
-                { name: 'Si Woo Kim', scoreToPar: -9, position: 4 },
-                { name: 'Min Woo Lee', scoreToPar: -3, position: 11 },
-                { name: 'Justin Rose', scoreToPar: -2, position: 18 },
-                { name: 'Shane Lowry', scoreToPar: -1, position: 24 },
-                { name: 'Brooks Koepka', scoreToPar: 2, position: 38 },
+                { name: 'Rory McIlroy', scoreToPar: -12, position: 1 },
+                { name: 'Matt Fitzpatrick', scoreToPar: -11, position: 2 },
+                { name: 'Xander Schauffele', scoreToPar: -10, position: 3 },
+                { name: 'Justin Rose', scoreToPar: -9, position: 4 },
+                { name: 'Viktor Hovland', scoreToPar: -3, position: 11 },
+                { name: 'J.J. Spaun', scoreToPar: -2, position: 18 },
+                { name: 'Sam Burns', scoreToPar: -1, position: 24 },
+                { name: 'Si Woo Kim', scoreToPar: 2, position: 38 },
                 // Joe — mediocre
-                { name: 'Bryson DeChambeau', scoreToPar: -3, position: 12 },
-                { name: 'Xander Schauffele', scoreToPar: -3, position: 13 },
-                { name: 'Jordan Spieth', scoreToPar: -2, position: 19 },
-                { name: 'Hideki Matsuyama', scoreToPar: -1, position: 25 },
-                { name: 'Robert MacIntyre', scoreToPar: 1, position: 32 },
-                { name: 'Jason Day', scoreToPar: 2, position: 39 },
-                { name: 'Jake Knapp', scoreToPar: 3, position: 46 },
-                { name: 'Patrick Reed', scoreToPar: 5, position: 58 },
+                { name: 'Jon Rahm', scoreToPar: -3, position: 12 },
+                { name: 'Bryson DeChambeau', scoreToPar: -3, position: 13 },
+                { name: 'Tommy Fleetwood', scoreToPar: -2, position: 19 },
+                { name: 'Brooks Koepka', scoreToPar: -1, position: 25 },
+                { name: 'Tyrrell Hatton', scoreToPar: 1, position: 32 },
+                { name: 'Russell Henley', scoreToPar: 2, position: 39 },
+                { name: 'Jordan Spieth', scoreToPar: 3, position: 46 },
+                { name: 'Harris English', scoreToPar: 5, position: 58 },
                 // Reed — mediocre
-                { name: 'Rory McIlroy', scoreToPar: -3, position: 14 },
+                { name: 'Cameron Young', scoreToPar: -3, position: 14 },
                 { name: 'Ludvig Aberg', scoreToPar: -2, position: 20 },
                 { name: 'Collin Morikawa', scoreToPar: -2, position: 21 },
                 { name: 'Patrick Cantlay', scoreToPar: -1, position: 26 },
-                { name: 'Viktor Hovland', scoreToPar: 0, position: 28 },
-                { name: 'Cameron Young', scoreToPar: 2, position: 40 },
-                { name: 'Akshay Bhatia', scoreToPar: 3, position: 47 },
-                { name: 'Cameron Smith', scoreToPar: 4, position: 53 },
+                { name: 'Min Woo Lee', scoreToPar: 0, position: 28 },
+                { name: 'Rickie Fowler', scoreToPar: 2, position: 40 },
+                { name: 'Patrick Reed', scoreToPar: 3, position: 47 },
+                { name: 'Akshay Bhatia', scoreToPar: 4, position: 53 },
                 // Non-rostered context
                 { name: 'Scottie Scheffler', scoreToPar: -7, position: 5 },
                 { name: 'Justin Thomas', scoreToPar: -5, position: 6 },
@@ -1095,16 +1418,23 @@
             leaderboardData = dummyPlayers.map(p => {
                 const match = matchPlayer(p.name);
                 const thrus = ['F', 'Thru 14', 'Thru 11', 'Thru 16', 'Thru 9', 'Thru 7'];
-                const sampleRounds = [
-                    ['68','70','--','--'], ['71','72','--','--'], ['69','71','--','--'],
-                    ['73','74','--','--'], ['70','69','--','--'], ['72','73','--','--'],
-                    ['67','71','--','--'], ['70','70','--','--'], ['66','68','--','--'],
-                    ['69','70','--','--']
+                // Split scoreToPar into 2 rounds for variety
+                const r1ToPar = Math.floor(p.scoreToPar / 2);
+                const r2ToPar = p.scoreToPar - r1ToPar;
+                const r1Total = COURSE_PAR_TOTAL + r1ToPar;
+                const r2Total = COURSE_PAR_TOTAL + r2ToPar;
+                const rounds = [String(r1Total), String(r2Total), '--', '--'];
+                const holeScores = [
+                    genHoleScores(r1Total),
+                    genHoleScores(r2Total),
+                    null,
+                    null
                 ];
                 return {
                     name: p.name, scoreToPar: p.scoreToPar, scoreDisplay: fmt(p.scoreToPar),
-                    today: sampleRounds[p.position % sampleRounds.length][1],
-                    rounds: sampleRounds[p.position % sampleRounds.length],
+                    today: fmt(r2ToPar),
+                    rounds,
+                    holeScores,
                     thru: thrus[p.position % thrus.length],
                     position: p.position, posDisplay: 'T' + p.position,
                     isCut: false, isWD: false,
@@ -1136,5 +1466,19 @@
             }
         });
     </script>
+
+    <!-- Scorecard modal -->
+    <div class="sc-overlay" id="sc-overlay" onclick="closeScorecard(event)">
+        <div class="sc-modal" onclick="event.stopPropagation()">
+            <div class="sc-header">
+                <div>
+                    <div class="sc-player-name" id="sc-player-name"></div>
+                    <div class="sc-player-meta" id="sc-player-meta"></div>
+                </div>
+                <button class="sc-close" onclick="closeScorecard()">&times;</button>
+            </div>
+            <div class="sc-body" id="sc-body"></div>
+        </div>
+    </div>
 </body>
 </html>
