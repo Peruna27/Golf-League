@@ -63,7 +63,7 @@
         }
 
         .masters-logo-img {
-            height: 38px;
+            height: 46px;
             width: auto;
             filter: drop-shadow(0 1px 3px rgba(0,0,0,0.25));
         }
@@ -787,7 +787,7 @@
     <header>
         <div class="header-inner">
             <div class="header-title">
-                <img src="https://golf-brightspot.s3.us-east-1.amazonaws.com/pga/20/91/b7c6d0fa4e189a63357f4c84ad94/pga-trophy-championship-rgb-1.png" alt="PGA Championship" class="masters-logo-img">
+                <img src="https://upload.wikimedia.org/wikipedia/en/c/c3/2026_PGA_Championship.png" alt="2026 PGA Championship" class="masters-logo-img">
                 <h1>PGA Championship</h1>
             </div>
             <div class="subtitle">Aronimink Golf Club &middot; 2026</div>
@@ -1212,7 +1212,7 @@
                                 const counting = i < 4 && !p.isCut && !p.isWD;
                                 const rowCls = (p.isCut || p.isWD) ? 'cut' : (counting ? 'counting' : 'bench');
                                 return `
-                                    <div class="player-row ${rowCls}" onclick="showScorecard(${JSON.stringify(p.name)})">
+                                    <div class="player-row ${rowCls}" onclick='showScorecard(${JSON.stringify(p.name)})'>
                                         <div class="player-pos">${p.posDisplay}</div>
                                         <div class="player-dot"></div>
                                         <div class="player-name">${shortName(p.name)}</div>
@@ -1242,7 +1242,7 @@
                     <div class="lb-score">Tot</div>
                 </div>
                 ${rows.map(p => `
-                    <div class="lb-row ${p.team ? 'rostered' : ''}" onclick="showScorecard(${JSON.stringify(p.name)})">
+                    <div class="lb-row ${p.team ? 'rostered' : ''}" onclick='showScorecard(${JSON.stringify(p.name)})'>
                         <div class="lb-pos">${p.posDisplay}</div>
                         <div class="lb-team ${p.team ? TEAM_COLORS[p.team] : ''}">${p.team || ''}</div>
                         <div class="lb-name">${shortName(p.name)}</div>
