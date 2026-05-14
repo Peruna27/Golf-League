@@ -708,23 +708,10 @@
             border-bottom-color: #8a92a0;
         }
 
-        .sc-row-label {
+        /* Labels keep the row's size/font, but get a distinct bg + letter-spacing */
+        .sc-cell.sc-row-label {
             background: #f7f7f9;
             color: var(--text-mid);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-        /* Label cell overrides: keep the leftmost "Score"/"Par"/"Hole" label small even on score/par rows */
-        .sc-row-par .sc-cell.sc-row-label,
-        .sc-row-score .sc-cell.sc-row-label,
-        .sc-row-holes .sc-cell.sc-row-label {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 9px;
-            font-weight: 700;
-            color: var(--text-mid);
-            background: #f7f7f9;
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
@@ -732,23 +719,23 @@
             font-weight: 700;
             color: var(--text-mid);
             background: #eef0f4;
-            font-size: 11px;
-            min-height: 22px;
+            font-size: 12px;
+            min-height: 24px;
         }
         .sc-row-par .sc-cell {
             font-weight: 700;
             color: var(--text-mid);
             background: #fafafc;
-            font-size: 11px;
-            min-height: 22px;
+            font-size: 12px;
+            min-height: 24px;
         }
         .sc-row-score .sc-cell {
             font-family: 'Source Serif 4', Georgia, serif;
             font-weight: 700;
-            font-size: 10px;
+            font-size: 12px;
             color: var(--text-dark);
             position: relative;
-            min-height: 24px;
+            min-height: 26px;
         }
         .sc-row-score .sc-cell.no-score { color: #ccc; font-weight: 500; }
         .sc-cell.total {
