@@ -1036,6 +1036,16 @@
             const competition = event.competitions && event.competitions[0];
             const competitors = competition ? competition.competitors || [] : [];
 
+            // Determine "today's round" globally: max round# with any data across all players
+            let todaysRoundIdx = 0;
+            for (const c of competitors) {
+                const ls = c.linescores || [];
+                for (let i = 0; i < ls.length; i++) {
+                    const holes = (ls[i] && ls[i].linescores) || [];
+                    if (holes.length > 0) todaysRoundIdx = Math.max(todaysRoundIdx, i);
+                }
+            }
+
             let parsed = competitors.map(c => {
                 try {
                     const athlete = c.athlete || {};
@@ -1071,29 +1081,29 @@
                         }
                     }
 
-                    // Find current (latest with any holes played) round for "today" + "thru"
-                    let curIdx = -1, curHoles = 0;
-                    for (let i = 0; i < lsArr.length; i++) {
-                        const holes = (lsArr[i] && lsArr[i].linescores) || [];
-                        if (holes.length > 0) { curIdx = i; curHoles = holes.length; }
-                    }
+                    // "Today" / "thru" derived from today's round (globally determined).
+                    // If the player hasn't teed off in today's round yet, both are '--'.
+                    const todaysLs = lsArr[todaysRoundIdx];
+                    const todaysHoles = todaysLs ? (todaysLs.linescores || []) : [];
                     let today = '--';
-                    let thru = '';
-                    if (curIdx >= 0) {
-                        today = lsArr[curIdx].displayValue || '--';
-                        thru = curHoles >= 18 ? 'F' : 'Thru ' + curHoles;
+                    let thru = '--';
+                    if (todaysHoles.length > 0) {
+                        today = todaysLs.displayValue || '--';
+                        thru = todaysHoles.length >= 18 ? 'F' : 'Thru ' + todaysHoles.length;
                     }
 
                     const order = c.order || 999;
                     const match = matchPlayer(displayName);
 
                     return {
-                        name: displayName, scoreStr, scoreToPar, scoreDisplay: fmt(scoreToPar),
+                        name: displayName, athleteId: c.id || null,
+                        scoreStr, scoreToPar, scoreDisplay: fmt(scoreToPar),
                         today, thru, rounds, holeScores,
                         position: order, posDisplay: String(order),
                         isCut: false, isWD: false,
                         team: match ? match.team : null,
-                        rosterName: match ? match.playerDef.name : null
+                        rosterName: match ? match.playerDef.name : null,
+                        teeTime: null  // filled in later by fetchTeeTimes()
                     };
                 } catch (e) { console.warn('Skipping competitor:', e); return null; }
             }).filter(Boolean);
@@ -1114,6 +1124,78 @@
             }
 
             return { competitors: parsed, tournamentName: event.name || '', tournamentStatus: '' };
+        }
+
+        // Fetch tee times for not-yet-started players from ESPN core API.
+        // ESPN's scoreboard endpoint doesn't include tee times, but their
+        // per-competitor /status endpoint does. We batch parallel requests
+        // for only the players whose "thru" is still '--'.
+        const ESPN_EVENT_ID = '401811947';
+
+        function formatTeeTime(iso) {
+            if (!iso) return null;
+            try {
+                const d = new Date(iso);
+                if (isNaN(d.getTime())) return null;
+                return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            } catch(e) { return null; }
+        }
+
+        async function fetchTeeTimes() {
+            const cacheKey = 'tee_times_' + ESPN_EVENT_ID + '_' + todayYYYYMMDD();
+            // Check cache first (tee times don't change once published)
+            let cached = null;
+            try {
+                const c = localStorage.getItem(cacheKey);
+                if (c) cached = JSON.parse(c);
+            } catch(e) {}
+
+            if (cached) {
+                applyTeeTimes(cached);
+                // Even with cache, do a background refresh for any new players
+            }
+
+            // Only fetch for players whose round hasn't started
+            const ids = leaderboardData
+                .filter(p => p.thru === '--' && p.athleteId && !(cached && cached[p.athleteId]))
+                .map(p => p.athleteId);
+            if (ids.length === 0) return;
+
+            const fetchOne = async (id) => {
+                try {
+                    const url = 'https://sports.core.api.espn.com/v2/sports/golf/leagues/pga/events/' +
+                        ESPN_EVENT_ID + '/competitions/' + ESPN_EVENT_ID +
+                        '/competitors/' + id + '/status?lang=en&region=us';
+                    const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
+                    if (!resp.ok) return null;
+                    const data = await resp.json();
+                    return { id, teeTime: data.teeTime || null };
+                } catch(e) { return null; }
+            };
+
+            const result = cached || {};
+            const batchSize = 8;
+            for (let i = 0; i < ids.length; i += batchSize) {
+                const batch = ids.slice(i, i + batchSize);
+                const settled = await Promise.all(batch.map(fetchOne));
+                for (const s of settled) {
+                    if (s && s.teeTime) result[s.id] = s.teeTime;
+                }
+            }
+
+            try { localStorage.setItem(cacheKey, JSON.stringify(result)); } catch(e) {}
+            applyTeeTimes(result);
+        }
+
+        function applyTeeTimes(map) {
+            let changed = false;
+            for (const p of leaderboardData) {
+                if (p.thru === '--' && p.athleteId && map[p.athleteId]) {
+                    const t = formatTeeTime(map[p.athleteId]);
+                    if (t) { p.teeTime = map[p.athleteId]; p.thru = t; changed = true; }
+                }
+            }
+            if (changed) render();
         }
 
         async function fetchData() {
@@ -1202,6 +1284,8 @@
                     document.getElementById('last-updated').textContent =
                         'Updated ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
                 }
+                // Fire-and-forget: populate tee times for players who haven't teed off yet
+                fetchTeeTimes();
             } catch (err) {
                 console.error('Parse error:', err);
                 if (leaderboardData.length === 0) {
