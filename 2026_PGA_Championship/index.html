@@ -928,8 +928,8 @@
         function fmtThru(val) {
             if (!val || val === '--') return '<span class="lb-thru-label">Thru</span><span class="lb-thru-val">--</span>';
             if (val === 'CUT' || val === 'WD' || val === 'DQ') return '<span class="lb-thru-label">&nbsp;</span><span class="lb-thru-val">' + val + '</span>';
-            // Tee time (contains AM/PM)
-            if (/[AP]M/i.test(val)) return '<span class="lb-thru-label">Tee</span><span class="lb-thru-val">' + val + '</span>';
+            // Tee time (contains AM/PM) — show the time only, no "Tee" label
+            if (/[AP]M/i.test(val)) return '<span class="lb-thru-label">&nbsp;</span><span class="lb-thru-val">' + val + '</span>';
             const num = val.replace(/^Thru\s*/i, '');
             return '<span class="lb-thru-label">Thru</span><span class="lb-thru-val">' + num + '</span>';
         }
