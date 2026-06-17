@@ -17,7 +17,7 @@ Three friends (Mike, Reed, Joe) draft 8 players each; lowest combined score of t
 - **Tap any player row** (in standings card or full leaderboard) → TV-style scorecard modal with hole-by-hole detail per round, color-coded birdies/eagles/bogeys/doubles.
 - **Tournament-themed branding**: each major gets its own colors, logo, and copy matching the official event branding.
 - **Cache last good data** in localStorage so the page still works if the API is down. Cache key is namespaced per tournament.
-- **Dummy data** loads if the API returns nothing (e.g., before the tournament starts), so the page is never blank.
+- **No dummy data.** When the API returns nothing, show an empty leaderboard with scheduled tee times in the Thru column — never fabricate fake scores. ESPN's `/scoreboard?dates=<tournament-day>` returns the full 156-player field with status="Scheduled" days before play begins, and tee times come from the per-competitor `/status` endpoint, so a "scheduled" state is fully populated without making anything up.
 
 ---
 
@@ -112,7 +112,7 @@ The `/scoreboard?dates=...` response is NOT the same shape as the bare `/leaderb
 7. **Read the Excel rosters** from `Source/<Tournament>.xlsx`. The file is a zip — parse it with Python's stdlib `zipfile` + `xml.etree.ElementTree` if openpyxl/pandas aren't installed (don't `pip install` without user approval). Update the `TEAMS` object. **Display order in `TEAMS` should match the Excel column order** (e.g., for 2026 PGA: Mike / Reed / Joe).
 8. **`CACHE_KEY`** — change to avoid colliding with other tournaments' localStorage data.
 9. **Tournament-name check** in `parseESPNData` — used to flag the status banner when the API is serving a different event. For PGA Championship: `tn.includes('pga championship') || tn.includes(courseName)`.
-10. **Dummy data** — refresh the player list to match the new rosters. Useful for previewing while the tournament hasn't started yet, and so the page isn't broken if ESPN goes down. Default sample: Mike runaway leader so the standings card has visible separation when previewed.
+10. **ESPN fallback dates in `ESPN_API_URLS`** — when copying a tournament template, replace the previous tournament's date list (e.g., May 14-17 for PGA) with the new tournament's dates (e.g., June 18-21 for US Open). Today's date is tried first; the per-tournament-day URLs are fallbacks. If you forget this step, the page silently falls back to "no data" because the wrong tournament's dates only ever return the wrong tournament. **Do not** keep `loadDummyData()` as the empty-state — delete the call. ESPN populates the field days early.
 11. **Landing page card** in root `index.html` — add a new card linking into the new subfolder, with course + dates and an event status tag (`Up Next` / `Live` / `Final`).
 12. **Commit & push** — Pages rebuilds automatically in under a minute.
 

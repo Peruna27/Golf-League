@@ -965,10 +965,10 @@
         }
         const ESPN_API_URLS = [
             'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=' + todayYYYYMMDD(),
-            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260514',
-            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260515',
-            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260516',
-            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260517',
+            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260618',
+            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260619',
+            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260620',
+            'https://site.api.espn.com/apis/site/v2/sports/golf/pga/scoreboard?dates=20260621',
             'https://site.api.espn.com/apis/site/v2/sports/golf/pga/leaderboard'
         ];
 
@@ -1586,82 +1586,8 @@
             return scores;
         }
 
-        // ── DUMMY DATA ──
-        function loadDummyData() {
-            // Mike runaway leader: top 4 ~ -42, vs Joe ~-9, Reed ~-8
-            const dummyPlayers = [
-                // Mike — dominant
-                { name: 'Rory McIlroy', scoreToPar: -12, position: 1 },
-                { name: 'Xander Schauffele', scoreToPar: -11, position: 2 },
-                { name: 'Matt Fitzpatrick', scoreToPar: -10, position: 3 },
-                { name: 'Sam Burns', scoreToPar: -9, position: 4 },
-                { name: 'Justin Rose', scoreToPar: -3, position: 11 },
-                { name: 'Wyndham Clark', scoreToPar: -2, position: 18 },
-                { name: 'Viktor Hovland', scoreToPar: -1, position: 24 },
-                { name: 'Chris Gotterup', scoreToPar: 2, position: 38 },
-                // Joe — mediocre
-                { name: 'Scottie Scheffler', scoreToPar: -3, position: 12 },
-                { name: 'Tommy Fleetwood', scoreToPar: -3, position: 13 },
-                { name: 'Bryson DeChambeau', scoreToPar: -2, position: 19 },
-                { name: 'Patrick Cantlay', scoreToPar: -1, position: 25 },
-                { name: 'Tyrrell Hatton', scoreToPar: 1, position: 32 },
-                { name: 'Russell Henley', scoreToPar: 2, position: 39 },
-                { name: 'Patrick Reed', scoreToPar: 3, position: 46 },
-                { name: 'Maverick McNealy', scoreToPar: 5, position: 58 },
-                // Reed — mediocre
-                { name: 'Jon Rahm', scoreToPar: -3, position: 14 },
-                { name: 'Cameron Young', scoreToPar: -2, position: 20 },
-                { name: 'Ludvig Aberg', scoreToPar: -2, position: 21 },
-                { name: 'Collin Morikawa', scoreToPar: -1, position: 26 },
-                { name: 'Justin Thomas', scoreToPar: 0, position: 28 },
-                { name: 'Brooks Koepka', scoreToPar: 2, position: 40 },
-                { name: 'Si Woo Kim', scoreToPar: 3, position: 47 },
-                { name: 'Hideki Matsuyama', scoreToPar: 4, position: 53 },
-                // Non-rostered context
-                { name: 'Jason Day', scoreToPar: -7, position: 5 },
-                { name: 'Tony Finau', scoreToPar: -5, position: 6 },
-                { name: 'Akshay Bhatia', scoreToPar: -4, position: 7 },
-                { name: 'Min Woo Lee', scoreToPar: -1, position: 27 },
-                { name: 'Phil Mickelson', scoreToPar: 4, position: 54 },
-                { name: 'Tiger Woods', scoreToPar: 6, position: 62 },
-            ];
-
-            leaderboardData = dummyPlayers.map(p => {
-                const match = matchPlayer(p.name);
-                const thrus = ['F', 'Thru 14', 'Thru 11', 'Thru 16', 'Thru 9', 'Thru 7'];
-                // Split scoreToPar into 2 rounds for variety
-                const r1ToPar = Math.floor(p.scoreToPar / 2);
-                const r2ToPar = p.scoreToPar - r1ToPar;
-                const r1Total = COURSE_PAR_TOTAL + r1ToPar;
-                const r2Total = COURSE_PAR_TOTAL + r2ToPar;
-                const rounds = [String(r1Total), String(r2Total), '--', '--'];
-                const holeScores = [
-                    genHoleScores(r1Total),
-                    genHoleScores(r2Total),
-                    null,
-                    null
-                ];
-                return {
-                    name: p.name, scoreToPar: p.scoreToPar, scoreDisplay: fmt(p.scoreToPar),
-                    today: fmt(r2ToPar),
-                    rounds,
-                    holeScores,
-                    thru: thrus[p.position % thrus.length],
-                    position: p.position, posDisplay: 'T' + p.position,
-                    isCut: false, isWD: false,
-                    team: match ? match.team : null,
-                    rosterName: match ? match.playerDef.name : null
-                };
-            });
-
-            leaderboardData.sort((a, b) => a.position - b.position);
-
-            const banner = document.getElementById('status-banner');
-            banner.className = 'status-banner';
-            banner.textContent = 'Preview Mode — Live scores load when hosted';
-            render();
-            document.getElementById('last-updated').textContent = 'Sample data';
-        }
+        // Dummy data deliberately omitted. Empty-state is real ESPN data with
+        // scheduled tee times — never fabricate scores. See CLAUDE.md.
 
         // ── SPLASH SCREEN ──
         let splashDismissed = false;
@@ -1681,9 +1607,7 @@
         setTimeout(dismissSplash, 4000);
 
         // ── INIT ──
-        fetchData().then(() => {
-            if (leaderboardData.length === 0) loadDummyData();
-        });
+        fetchData();
         let refreshInterval = setInterval(fetchData, 60000);
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
